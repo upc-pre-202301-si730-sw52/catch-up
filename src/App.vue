@@ -9,7 +9,7 @@
                              v-on:source-selected="setSource"></side-menu>
               </template>
               <template #end>
-
+                <language-switcher></language-switcher>
               </template>
           </pv-menubar>
       </div>
