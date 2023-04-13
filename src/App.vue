@@ -1,30 +1,84 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-</script>
-
 <template>
-  <div>
-    <a href="https://vitejs.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+  <div class="w-full">
+      <div>
+          <pv-menubar class="sticky bg-primary">
+              <template #start>
+                  <pv-button label="CatchUp" icon="pi pi-bars"
+                             @click="toggleSidebar"></pv-button>
+                  <side-menu v-model:visible="sidebarVisible"
+                             v-on:source-selected="setSource"></side-menu>
+              </template>
+              <template #end>
+
+              </template>
+          </pv-menubar>
+      </div>
+      <div>
+          <unavailable-content v-if="errors" :errors="errors"></unavailable-content>
+          <main-content v-else :articles="articles"></main-content>
+      </div>
+      <footer-content></footer-content>
   </div>
-  <HelloWorld msg="Vite + Vue" />
 </template>
 
+<script>
+import {NewsApiService} from "./news/services/news-api.service.js";
+import SideMenu from "./news/components/side-menu.component.vue";
+import MainContent from "./news/components/main-content.component.vue";
+import UnavailableContent from "./news/components/unavailable-content.component.vue";
+import FooterContent from "./news/components/footer-content.component.vue";
+
+export default {
+    name: 'App',
+    components: {FooterContent, UnavailableContent, MainContent, SideMenu},
+    data() {
+        return {
+            sidebarVisible: false,
+            articles: [],
+            errors: [],
+            newsApi: new NewsApiService()
+        }
+    },
+    created() {
+        this.getArticlesForSource('bbc-news');
+    },
+    methods: {
+        // Fetch articles for selected Source
+        getArticlesForSource(sourceId) {
+            this.newsApi.getArticlesForSource(sourceId)
+                .then(response => {
+                    this.articles = response.data.articles;
+                    console.log(response.data.articles);
+                })
+                .catch(e => {
+                    this.errors.push(e);
+                });
+        },
+        // Fetch articles for selected Source with Logo URL
+        getArticlesForSourceWithUrl(source) {
+            this.newsApi.getArticlesForSource(source.id)
+                .then(response => {
+                    this.articles = response.data.articles;
+                    this.articles.map(article => article.source.urlToLogo = source.urlToLogo);
+                    console.log(response.data.articles);
+                })
+                .catch(e => {
+                    this.errors.push(e);
+                });
+        },
+        // On Source selected
+
+        setSource(source) {
+            this.getArticlesForSourceWithUrl(source);
+            this.toggleSidebar();
+        },
+        toggleSidebar() {
+            this.sidebarVisible = !this.sidebarVisible;
+        }
+    }
+}
+</script>
+
 <style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
-}
+
 </style>
