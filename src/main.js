@@ -21,10 +21,12 @@ import Avatar from "primevue/avatar";
 import Menu from "primevue/menu";
 import Menubar from "primevue/menubar";
 import Toolbar from "primevue/toolbar";
+import i18n from "./i18n.js";
 
 
 createApp(App)
     .use(PrimeVue, { ripple: true })
+    .use(i18n)
     .component('pv-card', Card)
     .component('pv-button', Button)
     .component('pv-select-button', SelectButton)
