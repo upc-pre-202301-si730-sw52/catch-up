@@ -1,5 +1,5 @@
 <template>
-    <pv-sidebar v-model:visible="visible">
+    <pv-sidebar v-bind:visible="visible">
         <div v-for="source in sources" class="m-4">
             <div @click="onSourceSelected(source)"
                  class="flex align-content-start flex-wrap">
@@ -28,6 +28,7 @@ export default {
             sources: [],
             errors: [],
             newsApi: new NewsApiService()
+
         }
     },
     created() {
@@ -43,6 +44,10 @@ export default {
     methods: {
         onSourceSelected(source) {
             this.$emit('source-selected', source)
+        },
+
+        isVisible() {
+            return this.visible;
         }
     }
 }
